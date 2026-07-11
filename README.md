@@ -35,7 +35,7 @@ The platform is split into two asynchronous components to optimize processing sp
 
 ---
 
-## 📦 How to Run Locally
+## How to Run Locally
 
 1. **Clone the Repository:**
    ```bash
