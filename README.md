@@ -44,12 +44,12 @@ The platform is split into two asynchronous components to optimize processing sp
 
 ---
 
-2.  **Fire Up the Ingestion Harvester:**
-Run the Python engine first to initialize the file structure and connect to the streaming API.
+2. **Fire Up the Ingestion Harvester:**
+   Run the Python engine first to initialize the file structure and connect to the streaming API.
+   ```bash
+   python master_harvester.py
 
-python wiki_harvester.py
-
-3.  **Launch the Shiny Interface:**
-Open RStudio, set your working directory to the project folder, and run the application dashboard file.
-
-shiny::runApp()
+3. **Launch the Shiny Interface:**
+   Open RStudio, set your working directory to the project folder, and run the application dashboard file.
+   ```R
+   shiny::runApp("app.R")
