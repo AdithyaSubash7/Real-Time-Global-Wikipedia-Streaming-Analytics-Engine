@@ -199,25 +199,44 @@ server<- function(input, output, session){
     if(nrow(wiki_data)== 0) return(NULL)
     
     #Time plot
-    wiki_data %>%
+    plot_df<- wiki_data %>%
       tail(2000) %>%
       #converting raw text
       mutate(RealTime= as.POSIXct(Timestamp, format= "%Y-%m-%d %H:%M:%S")) %>%
       filter(!is.na(RealTime))%>%
       #rounding the time to the nearest minute
       mutate(minute= lubridate::floor_date(RealTime, "1 minute"))%>%
-      count(minute) %>%
-      ggplot(aes(x= minute, y= n, group= 1))+
+      count(minute)
+    
+    if(nrow(plot_df) == 0) return(NULL)
+    
+    p<- ggplot(plot_df, aes(x= minute, y= n, group= 1))+
       geom_line(color= "firebrick", size= 1.2)+
       geom_point(color= "firebrick", size= 2)+
-      scale_x_datetime(date_labels = "%H:%M", date_breaks = "1 mins")+
       labs(
         title= "Real-Time Wikipedia Edit Velocity Profile",
         x= "Wall Clock Time",
         y= "Total Edits"
       )+
       theme_minimal(base_size= 14)+
-      theme(axis.text.x = element_text(angle= 45, hjust= 1))
+      theme(axis.text.x = element_text(angle= 45, hjust= 1, vjust= 1, face= "bold"),
+            panel.grid.minor.x = element_blank())
+    
+    unique_times <- unique(plot_df$minute)
+    
+    if(length(unique_times) > 1) {
+      time_range <- range(plot_df$minute)
+      p <- p + scale_x_datetime(
+        date_labels = "%H:%M:%S",
+        breaks = seq(time_range[1], time_range[2], length.out = min(5, length(unique_times))),
+        expand = expansion(mult = 0.1)
+      )
+    } else {
+      #fallback layout if only 1 unique minute exists during deep filtering
+      p <- p + scale_x_datetime(date_labels = "%H:%M:%S")
+    }
+    
+    return(p)
   })
   
   #plot 4
